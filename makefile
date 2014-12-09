@@ -23,6 +23,9 @@ LUFA_PATH    = ../lufa-LUFA-140928/LUFA
 CC_FLAGS     = -DUSE_LUFA_CONFIG_HEADER -IConfig/
 LD_FLAGS     =
 
+program: $(TARGET).hex
+	avrdude -p at90usb82 -c osuisp2 -B 10 -e -F -U flash:w:$(TARGET).hex 
+
 # Default target
 all:
 
