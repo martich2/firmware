@@ -80,6 +80,8 @@ int main(void)
 {
     char buff = 0;
     SetupHardware();
+    all_probes_off();
+
 
     /* Create a regular character stream for the interface so that it can be used with the stdio.h functions */
     CDC_Device_CreateStream(&VirtualSerial_CDC_Interface, &USBSerialStream);
@@ -95,11 +97,15 @@ int main(void)
         {
             buff = (char)CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
 
-            if (buff == 'A')
+            // range of valid commands
+            if ((buff >= 'A') || (buff <= 'L'))
             {
-
+                function_lookup(buff);
+                
+                /*
                 LED_all_color(GREEN);
                 TCCR0B = (1 << CS02) | (1 << CS00); // start blinking LED
+                */
             }
         }
 
@@ -124,6 +130,7 @@ void SetupHardware(void)
 
     // USB status LEDs (4:1)
     LED_init();
+    switches_init();
 
     /* Hardware Initialization */
     //Joystick_Init();
