@@ -45,7 +45,9 @@
 		#include <stdio.h>
 
 		#include "Descriptors.h"
+// My includes are here
                 #include "LED.h"
+                #include "switching.h"
 
 		//#include <LUFA/Drivers/Board/LEDs.h>
 		//#include <LUFA/Drivers/Board/Joystick.h>
