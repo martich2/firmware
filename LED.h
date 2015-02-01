@@ -4,9 +4,11 @@
  */
 #ifndef _LED_H_
 #define _LED_H_
+
 /*
  * Port status LED functions
  */
+
 //TODO: define led port and change code so port is a macro
 #define LED1_GRN (1 << PD6)
 #define LED1_YLW (1 << PC2)

@@ -5,6 +5,17 @@
 #ifndef _SWITCHING_H_
 #define _SWITCHING_H_
 
+#define PROBE_1_OFF (1 << 4)
+#define PROBE_2_OFF (1 << 5)
+#define PROBE_3_OFF (1 << 6)
+#define PROBE_4_OFF (1 << 7)
+
+#define PROBE_1_ON ~PROBE_1_OFF 
+#define PROBE_2_ON ~PROBE_1_OFF 
+#define PROBE_3_ON ~PROBE_1_OFF 
+#define PROBE_4_ON ~PROBE_1_OFF 
+
+
 // possible channels to connect probes to.
 typedef enum {CH_A, CH_B} channel_t;
 
@@ -23,12 +34,78 @@ typedef enum {PROBE_1 = 0, PROBE_2 = 1, PROBE_3 = 2, PROBE_4 = 3} probe_t;
 probe_state_t probe_status[4] = {CNTD_2_CH_A, PROBE_OFF, PROBE_OFF, CNTD_2_CH_B};
 
 /*
+ * Set up the data direction registers for controlling the switches.
+ */
+void switches_init(void)
+{
+    DDRB |= 0xF0;
+    DDRC |= 0xF0;
+}
+
+/*
  * Sets the correct GPIO pins so the switches connect the given probe to 
  * the given channel. 
  */
 void connect(probe_t probe, channel_t channel)
 {
+    switch (probe)
+    {
+        case PROBE_1:
+            PORTB &= PROBE_1_ON;
+            if (channel == CH_A)
+            {
+                PORTC &= ~(1 << 4);
+                PORTC &= ~(1 << 6);
+            }
+            else if (channel == CH_B)
+            {
+                PORTC |= (1 << 4);
+                PORTC |= (1 << 7);
+            }
+        break;
 
+        case PROBE_2:
+            PORTB &= PROBE_2_ON;
+            if (channel == CH_A)
+            {
+                PORTC |= (1 << 4);
+                PORTC &= ~(1 << 6);
+            }
+            else if (channel == CH_B)
+            {
+                PORTC &= ~(1 << 4);
+                PORTC |= (1 << 7);
+            }
+        break;
+
+        case PROBE_3:
+            PORTB &= PROBE_3_ON;
+            if (channel == CH_A)
+            {
+                PORTC &= ~(1 << 5);
+                PORTC |= (1 << 6);
+            }
+            else if (channel == CH_B)
+            {
+                PORTC |= (1 << 5);
+                PORTC &= ~(1 << 7);
+            }
+        break;
+
+        case PROBE_4:
+            PORTB &= PROBE_4_ON;
+            if (channel == CH_A)
+            {
+                PORTC |= (1 << 5);
+                PORTC |= (1 << 6);
+            }
+            else if (channel == CH_B)
+            {
+                PORTC &= ~(1 << 5);
+                PORTC &= ~(1 << 7);
+            }
+        break;
+    }
 }
 
 /*
@@ -36,6 +113,13 @@ void connect(probe_t probe, channel_t channel)
  */
 void probe_off(probe_t probe)
 {
+    switch (probe)
+    {
+        case PROBE_1: PORTB |= PROBE_1_OFF; break;
+        case PROBE_2: PORTB |= PROBE_2_OFF; break;
+        case PROBE_3: PORTB |= PROBE_3_OFF; break;
+        case PROBE_4: PORTB |= PROBE_4_OFF; break;
+    }
 }
 
 /*
@@ -43,13 +127,8 @@ void probe_off(probe_t probe)
  */
 void all_probes_off(void)
 {
-    uint8_t i;
-
-    for (i = 0; i < sizeof(probe_status)/sizeof(probe_status[0]); i++)
-    {
-        probe_off((probe_t)i);
-        probe_status[i] = PROBE_OFF;
-    }
+    // this is faster than a for loop calling probe_off
+    PORTB |= 0xF0;
 }
 
 /*
