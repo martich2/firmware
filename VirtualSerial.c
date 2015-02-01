@@ -98,6 +98,7 @@ int main(void)
             if (buff == 'A')
             {
 
+                LED_all_color(GREEN);
                 TCCR0B = (1 << CS02) | (1 << CS00); // start blinking LED
             }
         }
@@ -121,9 +122,8 @@ void SetupHardware(void)
     /* Disable clock division */
     clock_prescale_set(clock_div_1);
 
-    // blink LED and USB status LEDs (4:1)
-    DDRD = (1 << PD4) | (1 << PD3)| (1 << PD2) | (1 << PD1)| (1 << PD0);
-    PORTD = (1 << PD0);
+    // USB status LEDs (4:1)
+    LED_init();
 
     /* Hardware Initialization */
     //Joystick_Init();
@@ -170,17 +170,19 @@ void CheckJoystickMovement(void)
 void EVENT_USB_Device_Connect(void)
 {
     //LEDs_SetAllLEDs(LEDMASK_USB_ENUMERATING);
-    PORTD &= ~LED1 & ~LED2 & ~LED3 & ~LED4;
-    PORTD |= LED2 | LED3;
+    LED_all_off();
+    LED_on(2, YELLOW);
+    LED_on(3, YELLOW);
 }
 
 /** Event handler for the library USB Disconnection event. */
 void EVENT_USB_Device_Disconnect(void)
 {
     //LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
-    PORTD &= ~LED1 & ~LED2 & ~LED3 & ~LED4;
-    PORTD |= LED1;
+    LED_all_off();
+    LED_on(1, YELLOW);
 }
+
 
 /** Event handler for the library USB Configuration Changed event. */
 void EVENT_USB_Device_ConfigurationChanged(void)
@@ -192,13 +194,15 @@ void EVENT_USB_Device_ConfigurationChanged(void)
     //LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
     if (ConfigSuccess)
     {
-        PORTD &= ~LED1 & ~LED2 & ~LED3 & ~LED4;
-        PORTD |= LED2 | LED4;
+        LED_all_off();
+        LED_on(2, YELLOW);
+        LED_on(4, YELLOW);
     }
     else
     {
-        PORTD &= ~LED1 & ~LED2 & ~LED3 & ~LED4;
-        PORTD |= LED1 | LED3;
+        LED_all_off();
+        LED_on(1, YELLOW);
+        LED_on(3, YELLOW);
     }
 }
 
@@ -224,6 +228,6 @@ ISR(TIMER0_OVF_vect)
     if ((tick % 32) == 0)
     {
         //fputs("Hello\r\n", &USBSerialStream);
-        PORTD ^= (1 << PD0);
+        LED_all_toggle();
     }
 }

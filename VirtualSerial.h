@@ -45,6 +45,7 @@
 		#include <stdio.h>
 
 		#include "Descriptors.h"
+                #include "LED.h"
 
 		//#include <LUFA/Drivers/Board/LEDs.h>
 		//#include <LUFA/Drivers/Board/Joystick.h>
@@ -52,10 +53,6 @@
 		#include <LUFA/Platform/Platform.h>
 
 	/* Macros: */
-                #define LED1 (1 << PD1)
-                #define LED2 (1 << PD2)
-                #define LED3 (1 << PD3)
-                #define LED4 (1 << PD4)
 		/** LED mask for the library LED driver, to indicate that the USB interface is not ready. */
 		//#define LEDMASK_USB_NOTREADY      LEDS_LED1
 
