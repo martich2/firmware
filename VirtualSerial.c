@@ -80,7 +80,7 @@ int main(void)
 {
     char buff = 0;
     SetupHardware();
-    //all_probes_off();
+    all_probes_off();
 
 
     /* Create a regular character stream for the interface so that it can be used with the stdio.h functions */
@@ -100,13 +100,12 @@ int main(void)
             // range of valid commands
             if ((buff >= 'A') || (buff <= 'L'))
             {
-                if (buff != 'A')
-                    function_lookup(buff);
-                else
-                {
+                function_lookup(buff);
+                
+                /*
                     LED_all_color(GREEN);
                     TCCR0B = (1 << CS02) | (1 << CS00); // start blinking LED
-                }
+               */ 
             }
         }
 
