@@ -72,6 +72,8 @@ USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
 static FILE USBSerialStream;
 
 void tcnt0_init(void);
+// TODO move this to the LED file
+void status_leds(probe_t ch_a, probe_t ch_b);
 
 /** Main program entry point. This routine contains the overall program flow, including initial
  *  setup of all components and the main program loop.
@@ -81,6 +83,7 @@ int main(void)
     char buff = 0;
     SetupHardware();
     all_probes_off();
+    
 
 
     /* Create a regular character stream for the interface so that it can be used with the stdio.h functions */
@@ -98,9 +101,10 @@ int main(void)
             buff = (char)CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
 
             // range of valid commands
-            if ((buff >= 'A') || (buff <= 'L'))
+            if ((buff >= 'A') || (buff <= 'L') || (buff == 'Z'))
             {
                 function_lookup(buff);
+                status_leds(ch_a_status, ch_b_status);
                 
                 /*
                     LED_all_color(GREEN);
@@ -178,8 +182,8 @@ void EVENT_USB_Device_Connect(void)
 {
     //LEDs_SetAllLEDs(LEDMASK_USB_ENUMERATING);
     LED_all_off();
-    LED_on(2, YELLOW);
-    LED_on(3, YELLOW);
+    LED_on(LED2, YELLOW);
+    LED_on(LED3, YELLOW);
 }
 
 /** Event handler for the library USB Disconnection event. */
@@ -187,7 +191,7 @@ void EVENT_USB_Device_Disconnect(void)
 {
     //LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
     LED_all_off();
-    LED_on(1, YELLOW);
+    LED_on(LED1, YELLOW);
 }
 
 
@@ -202,14 +206,14 @@ void EVENT_USB_Device_ConfigurationChanged(void)
     if (ConfigSuccess)
     {
         LED_all_off();
-        LED_on(2, YELLOW);
-        LED_on(4, YELLOW);
+        LED_on(LED2, YELLOW);
+        LED_on(LED4, YELLOW);
     }
     else
     {
         LED_all_off();
-        LED_on(1, YELLOW);
-        LED_on(3, YELLOW);
+        LED_on(LED1, YELLOW);
+        LED_on(LED3, YELLOW);
     }
 }
 
@@ -237,4 +241,32 @@ ISR(TIMER0_OVF_vect)
         //fputs("Hello\r\n", &USBSerialStream);
         LED_all_toggle();
     }
+}
+
+// TODO: Move the LED file
+/*
+ * Sets the front pannel status LEDs to the correct color based on 
+ * probe to channel connection
+ */
+void status_leds(probe_t ch_a, probe_t ch_b)
+{
+   LED_all_off();
+
+   switch (ch_a)
+   {
+       case PROBE_1: LED_on(LED1, GREEN); break;
+       case PROBE_2: LED_on(LED2, GREEN); break;
+       case PROBE_3: LED_on(LED3, GREEN); break;
+       case PROBE_4: LED_on(LED4, GREEN); break;
+       case NO_PROBE: break;
+   }
+   
+   switch (ch_b)
+   {
+       case PROBE_1: LED_on(LED1, YELLOW); break;
+       case PROBE_2: LED_on(LED2, YELLOW); break;
+       case PROBE_3: LED_on(LED3, YELLOW); break;
+       case PROBE_4: LED_on(LED4, YELLOW); break;
+       case NO_PROBE: break;
+   }
 }

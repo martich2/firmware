@@ -22,6 +22,9 @@
 // LED states
 typedef enum {GREEN, YELLOW} color_t;
 
+// the LEDs on the front pannel
+typedef enum {LED1, LED2, LED3, LED4} led_t;
+
 /*
  * Set up the data direction registers for the LEDs
  */
@@ -32,14 +35,16 @@ void LED_init(void)
     DDRC |= LED1_YLW;
 }
 
+
+
 /* Turns on an LED given the number of the LED, 1 - 4, 
  * and the color, green or yellow.  LEDs are active low.
  */
-void LED_on(uint8_t LED, color_t the_color)
+void LED_on(led_t LED, color_t the_color)
 {
     switch (LED)
     {
-        case 1:
+        case LED1:
             if (the_color == GREEN)
             {
                 PORTD &= ~LED1_GRN;
@@ -52,7 +57,7 @@ void LED_on(uint8_t LED, color_t the_color)
             }
         break;
 
-        case 2:
+        case LED2:
             if (the_color == GREEN)
             {
                 PORTD &= ~LED2_GRN;
@@ -65,7 +70,7 @@ void LED_on(uint8_t LED, color_t the_color)
             }
         break;
 
-        case 3:
+        case LED3:
             if (the_color == GREEN)
             {
                 PORTD &= ~LED3_GRN;
@@ -78,7 +83,7 @@ void LED_on(uint8_t LED, color_t the_color)
             }
         break;
 
-        case 4:
+        case LED4:
             if (the_color == GREEN)
             {
                 PORTD &= ~LED4_GRN;
@@ -90,37 +95,33 @@ void LED_on(uint8_t LED, color_t the_color)
                 PORTD &= ~LED4_YLW;
             }
         break;
-
-        default: break;
     }
 }
 
 /* Turns off  an LED given the number of the LED, 1 - 4 */ 
-void LED_off(uint8_t LED)
+void LED_off(led_t LED)
 {
     switch (LED)
     {
-        case 1:
+        case LED1:
             PORTD &= ~LED1_GRN;
             PORTC &= ~LED1_YLW;
             break;
             
-        case 2:
+        case LED2:
             PORTD &= ~LED2_GRN;
             PORTD &= ~LED2_YLW;
             break;
 
-        case 3:
+        case LED3:
             PORTD &= ~LED3_GRN;
             PORTD &= ~LED3_YLW;
             break;
 
-        case 4:
+        case LED4:
             PORTD &= ~LED4_GRN;
             PORTD &= ~LED4_YLW;
             break;
-
-        default: break;
     }
 }
 
@@ -129,9 +130,9 @@ void LED_all_off(void)
 {
     uint8_t i;
 
-    for (i = 1; i < 5; i++)
+    for (i = 0; i < 4; i++)
     {
-        LED_off(i);
+        LED_off((led_t)i);
     }
 }
 
@@ -147,9 +148,9 @@ void LED_all_color(color_t the_color)
 {
     uint8_t i;
 
-    for (i = 1; i < 5; i++)
+    for (i = 0; i < 4; i++)
     {
-        LED_on(i, the_color);
+        LED_on((led_t)i, the_color);
     }
 }
 

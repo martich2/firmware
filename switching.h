@@ -39,6 +39,9 @@ probe_state_t probe_status[4] = {HI_Z, HI_Z, HI_Z, HI_Z};
 probe_t ch_a_status = NO_PROBE;
 probe_t ch_b_status = NO_PROBE;
 
+// TODO: make hader and c files
+void deactivate_old_probe(channel_t channel);
+
 /*
  * Set up the data direction registers for controlling the switches.
  */
@@ -48,12 +51,15 @@ void switches_init(void)
     DDRC |= 0xF0;
 }
 
+
 /*
  * Sets the correct GPIO pins so the switches connect the given probe to 
  * the given channel. 
  */
 void connect(probe_t probe, channel_t channel)
 {
+    deactivate_old_probe(channel);
+
     switch (probe)
     {
         case PROBE_1:
@@ -63,11 +69,13 @@ void connect(probe_t probe, channel_t channel)
                 //TODO: should these be hard set values for hte upper nibble?
                 PORTC &= ~(1 << 4);
                 PORTC &= ~(1 << 6);
+                ch_a_status = PROBE_1;
             }
             else if (channel == CH_B)
             {
                 PORTC |= (1 << 4);
                 PORTC |= (1 << 7);
+                ch_b_status = PROBE_1;
             }
         break;
 
@@ -77,11 +85,13 @@ void connect(probe_t probe, channel_t channel)
             {
                 PORTC |= (1 << 4);
                 PORTC &= ~(1 << 6);
+                ch_a_status = PROBE_2;
             }
             else if (channel == CH_B)
             {
                 PORTC &= ~(1 << 4);
                 PORTC |= (1 << 7);
+                ch_b_status = PROBE_2;
             }
         break;
 
@@ -91,11 +101,13 @@ void connect(probe_t probe, channel_t channel)
             {
                 PORTC &= ~(1 << 5);
                 PORTC |= (1 << 6);
+                ch_a_status = PROBE_3;
             }
             else if (channel == CH_B)
             {
                 PORTC |= (1 << 5);
                 PORTC &= ~(1 << 7);
+                ch_b_status = PROBE_3;
             }
         break;
 
@@ -105,16 +117,26 @@ void connect(probe_t probe, channel_t channel)
             {
                 PORTC |= (1 << 5);
                 PORTC |= (1 << 6);
+                ch_a_status = PROBE_4;
             }
             else if (channel == CH_B)
             {
                 PORTC &= ~(1 << 5);
                 PORTC &= ~(1 << 7);
+                ch_b_status = PROBE_4;
             }
         break;
 
         case NO_PROBE: break;
     }
+
+    // clear B if it was previously used for the current probe.
+    if ((channel == CH_A) && (ch_b_status == ch_a_status))
+        ch_b_status = NO_PROBE;
+
+    // clear A if it was previously used for current probe.
+    if ((channel == CH_B) && (ch_a_status == ch_b_status))
+        ch_a_status = NO_PROBE;
 }
 
 /*
@@ -154,7 +176,7 @@ void all_probes_off(void)
  * If a probe is connected to a given channel, disconnect it.
  * Deactive old probe connection to prevent undesired switching connections.
  */
-void deactivate_probe(channel_t channel)
+void deactivate_old_probe(channel_t channel)
 {
     if (channel == CH_A)
     {
@@ -170,7 +192,7 @@ void deactivate_probe(channel_t channel)
 
 /*
  * Call the correct function with proper parameters based on the received command from host PC. 
- * Command letters A - L are the current protocol
+ * Command letters A - L are the current protocol. Z is for debug.
  */
 void function_lookup(char cmd)
 {
@@ -191,6 +213,7 @@ void function_lookup(char cmd)
         case 'k': probe_off(PROBE_3); break;
         case 'L': probe_off(PROBE_4); break;
 
+        // for debug TODO: remove in release
         case 'Z': all_probes_off(); break;
         default: break;
     }
