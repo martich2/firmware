@@ -83,6 +83,7 @@ int main(void)
     char buff = 0;
     SetupHardware();
     all_probes_off();
+    LED_all_off();
     
 
 
