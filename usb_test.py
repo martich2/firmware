@@ -1,8 +1,16 @@
 # must be 2.7 compatible
 import serial
+import sys
 
-command_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'L', 'Q']
-port = "/dev/ttyACM0"
+command_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'L', 'Q', 'Z']
+port = "/dev/ttyACM"
+
+# use ttyACM0 as default otherwise go with command line value
+if len(sys.argv) > 1:
+    port += str(sys.argv[1])
+else:
+    port += "0"
+
 ser = serial.Serial(port, 9600)
 
 print

@@ -82,8 +82,8 @@ int main(void)
 {
     char buff = 0;
     SetupHardware();
-    all_probes_off();
     LED_all_off();
+    all_probes_off();
     
 
 
@@ -112,10 +112,10 @@ int main(void)
                     TCCR0B = (1 << CS02) | (1 << CS00); // start blinking LED
                */ 
             }
-        }
+       }
 
         /* Must throw away unused bytes from the host, or it will lock up while waiting for the device */
-        CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
+        //CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
 
         // must happen for API to work
         CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
