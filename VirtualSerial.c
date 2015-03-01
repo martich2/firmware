@@ -178,6 +178,7 @@ void CheckJoystickMovement(void)
 }
 #endif 
 
+#if USB_DEBUG
 /** Event handler for the library USB Connection event. */
 void EVENT_USB_Device_Connect(void)
 {
@@ -223,7 +224,9 @@ void EVENT_USB_Device_ControlRequest(void)
 {
     CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
 }
+#endif
 
+// use a timer to blink LEDs for debuging
 void tcnt0_init(void)
 {
     TCCR0A = 0x00;  // normal mode, OC0A & OC0B pins disconnected, TOP/MAX = FF
@@ -231,6 +234,7 @@ void tcnt0_init(void)
     TIMSK0 = (1 << TOIE0);  // interrupt on overflow
 }
 
+// For debuging
 // ((1/(16,000,000/1,024))*256*64) = 1.048576s
 ISR(TIMER0_OVF_vect)
 {
