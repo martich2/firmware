@@ -95,8 +95,6 @@ int main(void)
 
     for (;;)
     {
-        //CheckJoystickMovement();
-
         if (CDC_Device_BytesReceived(&VirtualSerial_CDC_Interface) > 0 )
         {
             buff = (char)CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
@@ -133,50 +131,12 @@ void SetupHardware(void)
     /* Disable clock division */
     clock_prescale_set(clock_div_1);
 
-    // USB status LEDs (4:1)
-    LED_init();
-    switches_init();
-
     /* Hardware Initialization */
-    //Joystick_Init();
-    //LEDs_Init();
     tcnt0_init();
     USB_Init();
+    LED_init();
+    switches_init();
 }
-
-/** Checks for changes in the position of the board joystick, sending strings to the host upon each change. */
-#if 0
-void CheckJoystickMovement(void)
-{
-    uint8_t     JoyStatus_LCL = Joystick_GetStatus();
-    char*       ReportString  = NULL;
-    static bool ActionSent    = false;
-
-    if (JoyStatus_LCL & JOY_UP)
-        ReportString = "Joystick Up\r\n";
-    else if (JoyStatus_LCL & JOY_DOWN)
-        ReportString = "Joystick Down\r\n";
-    else if (JoyStatus_LCL & JOY_LEFT)
-        ReportString = "Joystick Left\r\n";
-    else if (JoyStatus_LCL & JOY_RIGHT)
-        ReportString = "Joystick Right\r\n";
-    else if (JoyStatus_LCL & JOY_PRESS)
-        ReportString = "Joystick Pressed\r\n";
-    else
-        ActionSent = false;
-
-    if ((ReportString != NULL) && (ActionSent == false))
-    {
-        ActionSent = true;
-
-        /* Write the string to the virtual COM port via the created character stream */
-        fputs(ReportString, &USBSerialStream);
-
-        /* Alternatively, without the stream: */
-        // CDC_Device_SendString(&VirtualSerial_CDC_Interface, ReportString);
-    }
-}
-#endif 
 
 #if USB_DEBUG
 /** Event handler for the library USB Connection event. */
