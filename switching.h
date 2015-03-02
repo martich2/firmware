@@ -210,7 +210,7 @@ void function_lookup(char cmd)
 
         case 'I': probe_off(PROBE_1); break;
         case 'J': probe_off(PROBE_2); break;
-        case 'k': probe_off(PROBE_3); break;
+        case 'K': probe_off(PROBE_3); break;
         case 'L': probe_off(PROBE_4); break;
 
         // for debug TODO: remove in release
