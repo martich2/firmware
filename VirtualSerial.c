@@ -35,7 +35,7 @@
  */
 
 #include "VirtualSerial.h"
-
+#define USB_DEBUG
 /** LUFA CDC Class driver interface configuration and state information. This structure is
  *  passed to all CDC Class driver functions, so that multiple instances of the same class
  *  within a device can be differentiated from one another.
@@ -138,7 +138,7 @@ void SetupHardware(void)
     switches_init();
 }
 
-#if USB_DEBUG
+#ifdef USB_DEBUG
 /** Event handler for the library USB Connection event. */
 void EVENT_USB_Device_Connect(void)
 {
