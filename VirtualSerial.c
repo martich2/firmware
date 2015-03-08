@@ -35,7 +35,6 @@
  */
 
 #include "VirtualSerial.h"
-#define USB_DEBUG
 /** LUFA CDC Class driver interface configuration and state information. This structure is
  *  passed to all CDC Class driver functions, so that multiple instances of the same class
  *  within a device can be differentiated from one another.
@@ -142,29 +141,30 @@ void SetupHardware(void)
 /** Event handler for the library USB Connection event. */
 void EVENT_USB_Device_Connect(void)
 {
-    //LEDs_SetAllLEDs(LEDMASK_USB_ENUMERATING);
     LED_all_off();
     LED_on(LED2, YELLOW);
     LED_on(LED3, YELLOW);
 }
+#endif
 
+#ifdef USB_DEBUG
 /** Event handler for the library USB Disconnection event. */
 void EVENT_USB_Device_Disconnect(void)
 {
-    //LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
     LED_all_off();
     LED_on(LED1, YELLOW);
 }
 
+#endif
 
 /** Event handler for the library USB Configuration Changed event. */
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
+#ifdef USB_DEBUG
     bool ConfigSuccess = true;
 
     ConfigSuccess &= CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface);
 
-    //LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
     if (ConfigSuccess)
     {
         LED_all_off();
@@ -177,6 +177,11 @@ void EVENT_USB_Device_ConfigurationChanged(void)
         LED_on(LED1, YELLOW);
         LED_on(LED3, YELLOW);
     }
+#else
+
+    CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface);
+
+#endif
 }
 
 /** Event handler for the library USB Control Request reception event. */
@@ -184,7 +189,6 @@ void EVENT_USB_Device_ControlRequest(void)
 {
     CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
 }
-#endif
 
 // use a timer to blink LEDs for debuging
 void tcnt0_init(void)

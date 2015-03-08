@@ -26,6 +26,9 @@ LD_FLAGS     =
 program: $(TARGET).hex
 	avrdude -p at90usb82 -c osuisp2 -B 10 -e -F -U flash:w:$(TARGET).hex 
 
+#debug: $(TARGET).hex
+#	CC_FLAGS = $(CC_FLAGS) -DUSB_DEBUG
+
 # Default target
 all:
 
